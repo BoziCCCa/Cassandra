@@ -1,0 +1,168 @@
+CREATE KEYSPACE IF NOT EXISTS recipe_app WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+USE recipe_app;
+
+
+CREATE TABLE IF NOT EXISTS Recipe (
+    recipe_id UUID,
+    title TEXT,
+    photo TEXT,
+    ingredients LIST<TEXT>,
+    instructions TEXT,
+    creator_user_id TEXT,
+    meal_type TEXT,
+    taste_type TEXT,
+    created_at TIMESTAMP,
+    PRIMARY KEY (recipe_id, created_at)
+) WITH CLUSTERING ORDER BY (created_at DESC)
+  AND bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+
+CREATE TABLE IF NOT EXISTS RecipeByUser (
+    creator_user_id TEXT,
+    recipe_id UUID,
+    title TEXT,
+    photo TEXT,
+    ingredients LIST<TEXT>,
+    instructions TEXT,
+    meal_type TEXT,
+    taste_type TEXT,
+    created_at TIMESTAMP,
+    PRIMARY KEY (creator_user_id, created_at, recipe_id)
+) WITH CLUSTERING ORDER BY (created_at DESC)
+  AND bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+
+CREATE TABLE IF NOT EXISTS RecipeByType (
+    recipe_id UUID,
+    title TEXT,
+    photo TEXT,
+    ingredients LIST<TEXT>,
+    instructions TEXT,
+    creator_user_id TEXT,
+    meal_type TEXT,
+    taste_type TEXT,
+    created_at TIMESTAMP,
+    PRIMARY KEY ((taste_type, meal_type), created_at, recipe_id)
+) WITH CLUSTERING ORDER BY (created_at DESC)
+  AND bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+CREATE TABLE IF NOT EXISTS RecipeByTasteType (
+    recipe_id UUID,
+    title TEXT,
+    photo TEXT,
+    ingredients LIST<TEXT>,
+    instructions TEXT,
+    creator_user_id TEXT,
+    meal_type TEXT,
+    taste_type TEXT,
+    created_at TIMESTAMP,
+    PRIMARY KEY (taste_type, created_at, recipe_id)
+) WITH CLUSTERING ORDER BY (created_at DESC)
+  AND bloom_filter_fp_chance = 0.01
+  AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy'}
+  AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+CREATE TABLE IF NOT EXISTS RecipeByMealType (
+    recipe_id UUID,
+    title TEXT,
+    photo TEXT,
+    ingredients LIST<TEXT>,
+    instructions TEXT,
+    creator_user_id TEXT,
+    meal_type TEXT,
+    taste_type TEXT,
+    created_at TIMESTAMP,
+    PRIMARY KEY (meal_type, created_at, recipe_id)
+) WITH CLUSTERING ORDER BY (created_at DESC)
+  AND bloom_filter_fp_chance = 0.01
+  AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy'}
+  AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+
+CREATE TABLE IF NOT EXISTS Product (
+    product_id UUID PRIMARY KEY,
+    name TEXT,
+    calories INT,
+    proteins INT,
+    fats INT,
+    carbs INT,
+)
+WITH
+  bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+CREATE TABLE IF NOT EXISTS User (
+    username TEXT,
+    email TEXT PRIMARY KEY,
+    password TEXT,
+	photo TEXT,
+)
+WITH
+  bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+CREATE TABLE IF NOT EXISTS Favorite (
+    user_id TEXT,
+    recipe_id UUID,
+    PRIMARY KEY (user_id, recipe_id)
+)
+WITH
+  bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+CREATE TABLE IF NOT EXISTS ShoppingList (
+    user_id TEXT,
+    list_id UUID,
+    products LIST<UUID>,
+    title TEXT,
+    PRIMARY KEY (user_id, list_id)
+)
+WITH
+  bloom_filter_fp_chance=0.01
+  AND compaction={ 'class' : 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy' }
+  AND compression={ 'sstable_compression' : 'org.apache.cassandra.io.compress.LZ4Compressor' }
+  AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'};
+
+
+
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Chicken', 335, 30, 20, 0);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Beef', 250, 26, 17, 0);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Broccoli', 55, 3, 1, 11);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Cucumber', 16, 1, 1, 4);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Carrot', 41, 2, 1, 10);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Rice', 205, 5, 2, 45);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Flour', 364, 10, 2, 73);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Eggs', 68, 5, 5, 4);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Spinach', 23, 3, 5, 5);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Salmon', 206, 22, 13, 0);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Olive Oil', 119, 0, 14, 0);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Cheese', 113, 7, 9, 1);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Yogurt', 61, 4, 4, 7);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Tomato', 18, 1, 2, 5);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES  (uuid(), 'Lettuce', 5, 2, 1, 1);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Potato', 130, 2, 2, 30);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Onion', 40, 2, 1, 10);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Garlic', 4, 2, 0, 1);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Mushrooms', 15, 3, 4, 2);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Avocado', 160, 2, 15, 9);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Pasta', 200, 7, 1, 42);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Bell Pepper', 25, 1, 1, 6);
+INSERT INTO Product (product_id, name, calories, proteins, fats, carbs) VALUES (uuid(), 'Quinoa', 120, 4, 2, 21);
