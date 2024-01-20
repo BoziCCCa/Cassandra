@@ -28,7 +28,7 @@ const RecipeList = () => {
       <h2 className="text-3xl font-bold mb-4 flex justify-center">
         Recipe List
       </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {recipes.map((recipe) => (
           <div
             key={recipe.recipe_id}

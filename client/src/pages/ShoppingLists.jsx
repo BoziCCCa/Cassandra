@@ -90,6 +90,7 @@ const ShoppingLists = () => {
                   value={newListTitle}
                   onChange={(e) => setNewListTitle(e.target.value)}
                   className="p-2 border rounded-md"
+                  required
                 />
               </div>
               <button

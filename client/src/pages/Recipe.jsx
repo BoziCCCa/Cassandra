@@ -44,8 +44,14 @@ const Recipe = () => {
         const { success, shoppingLists } = response.data;
         if (success) {
           setUserShoppingLists(shoppingLists);
-          console.log(shoppingLists[0]);
-          setSelectedShoppingList(shoppingLists[0].list_id);
+          console.log(shoppingLists);
+          if (shoppingLists.length > 0) {
+            console.log("VECE OD 0", shoppingLists[0].list_id);
+            setSelectedShoppingList(shoppingLists[0].list_id);
+          } else {
+            console.log("NULA");
+            setSelectedShoppingList(null);
+          }
         } else {
           console.error(
             "Error fetching shopping lists:",
@@ -155,7 +161,7 @@ const Recipe = () => {
             </h3>
             <select
               className="p-2 border rounded-md mb-4"
-              value={selectedShoppingList}
+              value={selectedShoppingList || ""}
               onChange={(e) => setSelectedShoppingList(e.target.value)}
             >
               {userShoppingLists.map((list) => (

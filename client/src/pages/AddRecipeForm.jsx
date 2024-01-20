@@ -96,7 +96,9 @@ const AddRecipeForm = ({ onAddRecipe }) => {
         </div>
       </div>
       <div className="mt-4">
-        <label className="block text-gray-600">Ingredients:</label>
+        <label className="block text-gray-600">
+          Ingredients(CTRL + click to select multiple):
+        </label>
         <select
           name="ingredients"
           value={newRecipe.ingredients}
